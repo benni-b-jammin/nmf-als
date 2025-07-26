@@ -11,7 +11,7 @@
 *.tex
 
 # ignore raw data files for data privacy
-*/data/subjects/*
+*/data/raw/*
 */.rawadni/*
 *.pial
 *.thickness
