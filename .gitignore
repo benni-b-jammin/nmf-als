@@ -1,0 +1,18 @@
+# ignore saved/temp files to keep clean
+*.swp
+*/__pycache__/*
+*.pyc
+*.npy
+*.txt
+*.csv
+*.pkl
+*.pdf
+*/.resources/*
+*.tex
+
+# ignore raw data files for data privacy
+*/data/subjects/*
+*/.rawadni/*
+*.pial
+*.thickness
+
