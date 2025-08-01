@@ -7,14 +7,14 @@ from the associated .npy files containing the matrix, filename, and label data,
 otherwise loads raw data, arranging into a matrix and returning.
 
 Author:         Benji Lawrence
-Last Modified:  26 July 2025
+Last Modified:  01 August 2025
 '''
 import os
 import numpy as np
 import pickle
 from collections import defaultdict
 import nibabel.freesurfer as fs
-import load_config # inspect for macro default values
+from .load_config import * # inspect for macro default values
 
 def load_ct_matrix(
     data_dir=DATA_DIR,
