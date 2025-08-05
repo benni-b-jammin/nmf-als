@@ -7,14 +7,15 @@ from the associated .npy files containing the matrix, filename, and label data,
 otherwise loads raw data, arranging into a matrix and returning.
 
 Author:         Benji Lawrence
-Last Modified:  01 August 2025
+Last Modified:  05 August 2025
 '''
 import os
+import subprocess
 import numpy as np
 import pickle
 from collections import defaultdict
-import nibabel.freesurfer as fs
-from .load_config import * # inspect for macro default values
+import nibabel as nib
+from src.data.load_config import *
 
 def load_ct_matrix(
     data_dir=DATA_DIR,
@@ -27,6 +28,12 @@ def load_ct_matrix(
     labels_file = os.path.join(save_dir, LABELS_DF)
     filenames_file = os.path.join(save_dir, FILENAMES_DF)
 
+    # Run fsaverage projection if data_dir doesn't exist or is empty
+    if not os.path.exists(data_dir) or not os.listdir(data_dir):
+        print("Projected data not found. Running fsaverage registration script...")
+        subprocess.run(["bash", FSAVG], check=True)
+
+    # Load cached data if available
     if os.path.isfile(T_file) and not reset:
         T = np.load(T_file, allow_pickle=True)
         with open(labels_file, "rb") as f:
@@ -39,36 +46,37 @@ def load_ct_matrix(
     labels = defaultdict(int)
     filenames = []
 
-    for subj_dir in sorted(os.listdir(data_dir)):
-        subj_path = os.path.join(data_dir, subj_dir)
-        if not os.path.isdir(subj_path):
+    subj_data_dict = defaultdict(list)
+
+    for file in sorted(os.listdir(data_dir)):
+        if not file.endswith(".mgh"):
             continue
 
-        subj_data = []
-        
-        # load left hemisphere 
-        if hemisphere in (LH, BH):
-            lh_path = os.path.join(subj_path, LH_CT_DF)
-            if os.path.isfile(lh_path):
-                lh_data = fs.read_morph_data(lh_path)
-                subj_data.append(lh_data)
-            else:
-                continue  # skip if missing
+        parts = file.split(".")
+        if len(parts) < 5:
+            continue
 
-        # load right hemisphere
-        if hemisphere in (RH, BH):
-            rh_path = os.path.join(subj_path, LH_CT_DF)
-            if os.path.isfile(rh_path):
-                rh_data = fs.read_morph_data(rh_path)
-                subj_data.append(rh_data)
-            else:
-                continue  # skip if missing
+        subject, hemi, fsavg, _, _ = parts
+        if hemisphere != BH and hemi != hemisphere:
+            continue
 
-        if subj_data:
-            thickness = np.concatenate(subj_data)
-            T.append(thickness)
-            filenames.append(subj_dir)
-            labels[subj_dir] = 0 if NC in subj_dir else 1
+        try:
+            data_path = os.path.join(data_dir, file)
+            ct_data = nib.load(data_path).get_fdata().squeeze()
+        except Exception as e:
+            print(f"Failed to read {file}: {e}")
+            continue
+
+        subj_data_dict[subject].append(ct_data)
+
+        if subject not in filenames:
+            filenames.append(subject)
+            labels[subject] = 0 if NC in subject else 1
+
+    for subj in filenames:
+        if subj in subj_data_dict:
+            thickness_data = np.concatenate(subj_data_dict[subj])
+            T.append(thickness_data)
 
     T = np.vstack(T)
     np.save(T_file, T)

@@ -16,3 +16,13 @@
 */.rawadni/*
 *.pial
 *.thickness
+*.mgh
+./data/raw/*
+./data/saved/*
+
+# ignore everything under the data directory
+/data/*
+!/data/.gitkeep  
+/data/raw/*
+/data/saved/*
+
