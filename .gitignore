@@ -1,22 +1,22 @@
 # ignore saved/temp files to keep clean
-*.swp
-*/__pycache__/*
-*.pyc
-*.npy
-*.txt
-*.csv
-*.pkl
-*.pdf
-*/.resources/*
-*.tex
+**.swp
+**/__pycache__/*
+**.pyc
+**.npy
+**.txt
+**.csv
+**.pkl
+**.pdf
+**/.resources/*
+**.tex
 
 # ignore raw data files for data privacy
-*.zip
-*/data/*
-*/.rawadni/*
-*.pial
-*.thickness
-*.mgh
+**.zip
+**/data/*
+**/.rawadni/*
+**.pial
+**.thickness
+**.mgh
 ./data/raw/*
 ./data/saved/*
 
@@ -25,4 +25,7 @@
 !/data/.gitkeep  
 /data/raw/*
 /data/saved/*
+
+# ignore jupyter checkpoints
+**/.ipynb_checkpoints/
 

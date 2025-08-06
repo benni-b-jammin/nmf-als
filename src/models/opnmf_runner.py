@@ -5,10 +5,10 @@ Wrapper program for the OPNMF model used in the ALS categorization program -
 allows for flexibility in switching models if needed.
 
 Author:         Benji Lawrence
-Last Modified:  25 July 2025
+Last Modified:  05 August 2025
 '''
 
-from opnmf import OPNMF 
+from opnmf.model import OPNMF 
 import numpy as np
 
 def run_opnmf(T, rank, init="nndsvd", max_iter=50000, tol=1e-9, laplacian=None):
